@@ -16,6 +16,7 @@ package builder
 
 import (
 	"flag"
+	"time"
 
 	"github.com/spf13/viper"
 
@@ -23,13 +24,15 @@ import (
 )
 
 const (
-	collectorQueueSize           = "collector.queue-size"
-	collectorNumWorkers          = "collector.num-workers"
-	collectorWriteCacheTTL       = "collector.write-cache-ttl"
-	collectorPort                = "collector.port"
-	collectorHTTPPort            = "collector.http-port"
-	collectorZipkinHTTPort       = "collector.zipkin.http-port"
-	collectorHealthCheckHTTPPort = "collector.health-check-http-port"
+	collectorQueueSize                    = "collector.queue-size"
+	collectorNumWorkers                   = "collector.num-workers"
+	collectorWriteCacheTTL                = "collector.write-cache-ttl"
+	collectorPort                         = "collector.port"
+	collectorHTTPPort                     = "collector.http-port"
+	collectorZipkinHTTPort                = "collector.zipkin.http-port"
+	collectorHealthCheckHTTPPort          = "collector.health-check-http-port"
+	collectorFilterCacheTTL               = "collector.filter-cache-ttl"
+	collectorFilterCacheDurationThreshold = "collector.filter-cache-duration-threshold"
 )
 
 // CollectorOptions holds configuration for collector
@@ -46,6 +49,9 @@ type CollectorOptions struct {
 	CollectorZipkinHTTPPort int
 	// CollectorHealthCheckHTTPPort is the port that the health check service listens in on for http requests
 	CollectorHealthCheckHTTPPort int
+
+	CollectorFilterCacheTTL               time.Duration
+	CollectorFilterCacheDurationThreshold time.Duration
 }
 
 // AddFlags adds flags for CollectorOptions
@@ -56,6 +62,8 @@ func AddFlags(flags *flag.FlagSet) {
 	flags.Int(collectorHTTPPort, 14268, "The http port for the collector service")
 	flags.Int(collectorZipkinHTTPort, 0, "The http port for the Zipkin collector service e.g. 9411")
 	flags.Int(collectorHealthCheckHTTPPort, 14269, "The http port for the health check service")
+	flags.Duration(collectorFilterCacheTTL, time.Minute*10, "The duration to wait before discarding filtering desicion")
+	flags.Duration(collectorFilterCacheDurationThreshold, time.Millisecond*50, "The duration of span necessary for span to get stored")
 }
 
 // InitFromViper initializes CollectorOptions with properties from viper
@@ -66,5 +74,7 @@ func (cOpts *CollectorOptions) InitFromViper(v *viper.Viper) *CollectorOptions {
 	cOpts.CollectorHTTPPort = v.GetInt(collectorHTTPPort)
 	cOpts.CollectorZipkinHTTPPort = v.GetInt(collectorZipkinHTTPort)
 	cOpts.CollectorHealthCheckHTTPPort = v.GetInt(collectorHealthCheckHTTPPort)
+	cOpts.CollectorFilterCacheTTL = v.GetDuration(collectorFilterCacheTTL)
+	cOpts.CollectorFilterCacheDurationThreshold = v.GetDuration(collectorFilterCacheDurationThreshold)
 	return cOpts
 }

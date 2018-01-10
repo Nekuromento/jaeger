@@ -31,12 +31,14 @@ type Client interface {
 
 // IndicesExistsService is an abstraction for elastic.IndicesExistsService
 type IndicesExistsService interface {
+	Pretty(pretty bool) IndicesExistsService
 	Do(ctx context.Context) (bool, error)
 }
 
 // IndicesCreateService is an abstraction for elastic.IndicesCreateService
 type IndicesCreateService interface {
 	Body(mapping string) IndicesCreateService
+	Pretty(pretty bool) IndicesCreateService
 	Do(ctx context.Context) (*elastic.IndicesCreateResult, error)
 }
 
@@ -46,6 +48,7 @@ type IndexService interface {
 	Type(typ string) IndexService
 	Id(id string) IndexService
 	BodyJson(body interface{}) IndexService
+	Pretty(pretty bool) IndexService
 	Do(ctx context.Context) (*elastic.IndexResponse, error)
 }
 
@@ -56,6 +59,7 @@ type SearchService interface {
 	Aggregation(name string, aggregation elastic.Aggregation) SearchService
 	IgnoreUnavailable(ignoreUnavailable bool) SearchService
 	Query(query elastic.Query) SearchService
+	Pretty(pretty bool) SearchService
 	Do(ctx context.Context) (*elastic.SearchResult, error)
 }
 
@@ -63,5 +67,6 @@ type SearchService interface {
 type MultiSearchService interface {
 	Add(requests ...*elastic.SearchRequest) MultiSearchService
 	Index(indices ...string) MultiSearchService
+	Pretty(pretty bool) MultiSearchService
 	Do(ctx context.Context) (*elastic.MultiSearchResult, error)
 }

@@ -128,17 +128,33 @@ build_ui:
 	rm -rf jaeger-ui-build && mkdir jaeger-ui-build
 	cp -r jaeger-ui/build jaeger-ui-build/
 
+.PHONY: build-all-in-one-darwin
+build-all-in-one-darwin: build_ui
+	CGO_ENABLED=0 GOOS=darwin installsuffix=cgo go build -o ./cmd/standalone/standalone-darwin $(BUILD_INFO) ./cmd/standalone/main.go
+
 .PHONY: build-all-in-one-linux
 build-all-in-one-linux: build_ui
 	CGO_ENABLED=0 GOOS=linux installsuffix=cgo go build -o ./cmd/standalone/standalone-linux $(BUILD_INFO) ./cmd/standalone/main.go
+
+.PHONY: build-agent-darwin
+build-agent-darwin:
+	CGO_ENABLED=0 GOOS=darwin installsuffix=cgo go build -o ./cmd/agent/agent-darwin $(BUILD_INFO) ./cmd/agent/main.go
 
 .PHONY: build-agent-linux
 build-agent-linux:
 	CGO_ENABLED=0 GOOS=linux installsuffix=cgo go build -o ./cmd/agent/agent-linux $(BUILD_INFO) ./cmd/agent/main.go
 
+.PHONY: build-query-darwin
+build-query-darwin:
+	CGO_ENABLED=0 GOOS=darwin installsuffix=cgo go build -o ./cmd/query/query-darwin $(BUILD_INFO) ./cmd/query/main.go
+
 .PHONY: build-query-linux
 build-query-linux:
 	CGO_ENABLED=0 GOOS=linux installsuffix=cgo go build -o ./cmd/query/query-linux $(BUILD_INFO) ./cmd/query/main.go
+
+.PHONY: build-collector-darwin
+build-collector-darwin:
+	CGO_ENABLED=0 GOOS=darwin installsuffix=cgo go build -o ./cmd/collector/collector-darwin $(BUILD_INFO) ./cmd/collector/main.go
 
 .PHONY: build-collector-linux
 build-collector-linux:

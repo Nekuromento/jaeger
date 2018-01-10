@@ -53,16 +53,22 @@ type SpanProcessor interface {
 	ProcessSpans(mSpans []*model.Span, spanFormat string) ([]bool, error)
 }
 
+type SpanFilter interface {
+	FilterSpans(mSpans []*model.Span) []*model.Span
+}
+
 type jaegerBatchesHandler struct {
 	logger         *zap.Logger
 	modelProcessor SpanProcessor
+	spanFilter     SpanFilter
 }
 
 // NewJaegerSpanHandler returns a JaegerBatchesHandler
-func NewJaegerSpanHandler(logger *zap.Logger, modelProcessor SpanProcessor) JaegerBatchesHandler {
+func NewJaegerSpanHandler(logger *zap.Logger, modelProcessor SpanProcessor, spanFilter SpanFilter) JaegerBatchesHandler {
 	return &jaegerBatchesHandler{
 		logger:         logger,
 		modelProcessor: modelProcessor,
+		spanFilter:     spanFilter,
 	}
 }
 
@@ -74,7 +80,8 @@ func (jbh *jaegerBatchesHandler) SubmitBatches(ctx thrift.Context, batches []*ja
 			mSpan := jConv.ToDomainSpan(span, batch.Process)
 			mSpans = append(mSpans, mSpan)
 		}
-		oks, err := jbh.modelProcessor.ProcessSpans(mSpans, JaegerFormatType)
+
+		oks, err := jbh.modelProcessor.ProcessSpans(jbh.spanFilter.FilterSpans(mSpans), JaegerFormatType)
 		if err != nil {
 			return nil, err
 		}

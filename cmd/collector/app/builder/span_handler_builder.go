@@ -24,7 +24,6 @@ import (
 	basicB "github.com/jaegertracing/jaeger/cmd/builder"
 	"github.com/jaegertracing/jaeger/cmd/collector/app"
 	zs "github.com/jaegertracing/jaeger/cmd/collector/app/sanitizer/zipkin"
-	"github.com/jaegertracing/jaeger/model"
 	"github.com/jaegertracing/jaeger/storage/spanstore"
 )
 
@@ -73,15 +72,15 @@ func (spanHb *SpanHandlerBuilder) BuildHandlers() (app.ZipkinSpansHandler, app.J
 		app.Options.ServiceMetrics(spanHb.metricsFactory),
 		app.Options.HostMetrics(hostMetrics),
 		app.Options.Logger(spanHb.logger),
-		app.Options.SpanFilter(defaultSpanFilter),
 		app.Options.NumWorkers(spanHb.collectorOpts.NumWorkers),
 		app.Options.QueueSize(spanHb.collectorOpts.QueueSize),
 	)
 
-	return app.NewZipkinSpanHandler(spanHb.logger, spanProcessor, zSanitizer),
-		app.NewJaegerSpanHandler(spanHb.logger, spanProcessor)
-}
+	spanFilter := app.NewFilterCache(
+		spanHb.collectorOpts.CollectorFilterCacheTTL,
+		spanHb.collectorOpts.CollectorFilterCacheDurationThreshold,
+	)
 
-func defaultSpanFilter(*model.Span) bool {
-	return true
+	return app.NewZipkinSpanHandler(spanHb.logger, spanProcessor, zSanitizer),
+		app.NewJaegerSpanHandler(spanHb.logger, spanProcessor, spanFilter)
 }

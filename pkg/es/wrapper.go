@@ -69,6 +69,11 @@ func WrapESIndicesExistsService(indicesExistsService *elastic.IndicesExistsServi
 	return ESIndicesExistsService{indicesExistsService: indicesExistsService}
 }
 
+// Pretty calls this function to internal service.
+func (e ESIndicesExistsService) Pretty(pretty bool) IndicesExistsService {
+	return WrapESIndicesExistsService(e.indicesExistsService.Pretty(pretty))
+}
+
 // Do calls this function to internal service.
 func (e ESIndicesExistsService) Do(ctx context.Context) (bool, error) {
 	return e.indicesExistsService.Do(ctx)
@@ -89,6 +94,11 @@ func WrapESIndicesCreateService(indicesCreateService *elastic.IndicesCreateServi
 // Body calls this function to internal service.
 func (c ESIndicesCreateService) Body(mapping string) IndicesCreateService {
 	return WrapESIndicesCreateService(c.indicesCreateService.Body(mapping))
+}
+
+// Pretty calls this function to internal service.
+func (c ESIndicesCreateService) Pretty(pretty bool) IndicesCreateService {
+	return WrapESIndicesCreateService(c.indicesCreateService.Pretty(pretty))
 }
 
 // Do calls this function to internal service.
@@ -126,6 +136,11 @@ func (i ESIndexService) Id(id string) IndexService {
 // BodyJson calls this function to internal service.
 func (i ESIndexService) BodyJson(body interface{}) IndexService {
 	return WrapESIndexService(i.indexService.BodyJson(body))
+}
+
+// Pretty calls this function to internal service.
+func (i ESIndexService) Pretty(pretty bool) IndexService {
+	return WrapESIndexService(i.indexService.Pretty(pretty))
 }
 
 // Do calls this function to internal service.
@@ -170,6 +185,11 @@ func (s ESSearchService) Query(query elastic.Query) SearchService {
 	return WrapESSearchService(s.searchService.Query(query))
 }
 
+// Pretty calls this function to internal service.
+func (s ESSearchService) Pretty(pretty bool) SearchService {
+	return WrapESSearchService(s.searchService.Pretty(pretty))
+}
+
 // Do calls this function to internal service.
 func (s ESSearchService) Do(ctx context.Context) (*elastic.SearchResult, error) {
 	return s.searchService.Do(ctx)
@@ -193,6 +213,11 @@ func (s ESMultiSearchService) Add(requests ...*elastic.SearchRequest) MultiSearc
 // Index calls this function to internal service.
 func (s ESMultiSearchService) Index(indices ...string) MultiSearchService {
 	return WrapESMultiSearchService(s.multiSearchService.Index(indices...))
+}
+
+// Pretty calls this function to internal service.
+func (s ESMultiSearchService) Pretty(pretty bool) MultiSearchService {
+	return WrapESMultiSearchService(s.multiSearchService.Pretty(pretty))
 }
 
 // Do calls this function to internal service.

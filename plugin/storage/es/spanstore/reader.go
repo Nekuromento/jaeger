@@ -23,7 +23,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/uber/jaeger-lib/metrics"
 	"go.uber.org/zap"
-	"gopkg.in/olivere/elastic.v5"
+	elastic "gopkg.in/olivere/elastic.v5"
 
 	"github.com/jaegertracing/jaeger/model"
 	jConverter "github.com/jaegertracing/jaeger/model/converter/json"
@@ -223,6 +223,7 @@ func (s *SpanReader) multiRead(traceIDs []string, startTime, endTime time.Time) 
 	results, err := s.client.MultiSearch().
 		Add(searchRequests...).
 		Index(indices...).
+		Pretty(true).
 		Do(s.ctx)
 	if err != nil {
 		return nil, err
@@ -317,6 +318,7 @@ func (s *SpanReader) findTraceIDs(traceQuery *spanstore.TraceQueryParameters) ([
 		Size(0). // set to 0 because we don't want actual documents.
 		Aggregation(traceIDAggregation, aggregation).
 		IgnoreUnavailable(true).
+		Pretty(true).
 		Query(boolQuery)
 
 	searchResult, err := searchService.Do(s.ctx)
