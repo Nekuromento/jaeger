@@ -93,10 +93,12 @@ func (c *cache) FilterSpans(spans []*model.Span) []*model.Span {
 			item = value.(cacheItem)
 		}
 
-		if isSlow(span, c.threshold) {
-			item.decision = store
-		} else if isParent(span) {
-			item.decision = filter
+		if item.decision != store {
+			if isSlow(span, c.threshold) {
+				item.decision = store
+			} else if isParent(span) {
+				item.decision = filter
+			}
 		}
 
 		if item.decision == unknown {
